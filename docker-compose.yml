@@ -1,0 +1,39 @@
+version: '2'
+services:
+  jenkins-docker-deamon:
+    image: docker:dind
+    container_name: docker
+    privileged: true
+    user: root
+    volumes:
+      - "${STORAGE}jenkins_home/jenkins-docker-certs:/certs/client"
+      - "${STORAGE}jenkins_home:/var/jenkins_home"
+    environment:
+      DOCKER_TLS_CERTDIR: "/certs"
+    ports:
+      - "2376:2376"
+    networks:
+      - jenkins
+  jenkins:
+    image: myjenkins-blueocean:2.361.2-1
+    container_name: jenkins
+    privileged: true
+    user: root
+    volumes:
+      - ${STORAGE}jenkins_home:/var/jenkins_home
+      - ${STORAGE}var/run/docker.sock:/var/run/docker.sock
+      - ${STORAGE}jenkins_home/jenkins-docker-certs:/certs/client:ro
+    environment:
+      JENKINS_HOST_HOME: "/data/jenkins"
+      DOCKER_HOST: "tcp://docker:2376"
+      DOCKER_CERT_PATH: "/certs/client"
+      DOCKER_TLS_VERIFY: "1"
+    ports:
+      - "8080:8080"
+      - "5000:5000"
+      - "50000:50000"
+    networks:
+      - jenkins
+networks:
+   jenkins:
+     name: jenkins
