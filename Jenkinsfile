@@ -6,12 +6,12 @@ node {
     stage('QueryGithubPR') {
         skipDefaultCheckout()
         // if project is private, add authrization header here.
-        pullreqsjson = sh(returnStdout: true, script: 'curl https://api.github.com/repos/kokoisN1/MyJenkins/pulls').trim()
+        pullreqsjson = sh(returnStdout: true, script: 'curl https://api.github.com/repos/kokoisN1/GetGitHubPR/pulls').trim()
         PRS = get_open_PR(pullreqsjson)
         if (PRS != []) {
             println "new/open pull/merge reuests found: " + PRS
             deleteDir()
-            checkout([$class: 'GitSCM', branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[credentialsId: 'kokoisN1', url: 'https://github.com/kokoisN1/MyJenkins.git']]])
+            checkout([$class: 'GitSCM', branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[credentialsId: 'kokoisN1', url: 'https://github.com/kokoisN1/GetGitHubPR.git']]])
         } else {
             println "No new/open pull/merge reuests found."
         }
